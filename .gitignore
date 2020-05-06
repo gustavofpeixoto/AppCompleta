@@ -1,1 +1,7 @@
 /.vs
+/src/DevIO.App/bin
+/src/DevIO.App/obj
+/src/DevIO.Business/bin
+/src/DevIO.Business/obj
+/src/DevIO.Data/bin
+/src/DevIO.Data/obj
