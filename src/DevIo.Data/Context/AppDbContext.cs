@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 
-namespace DevIo.Data.Context
+namespace DevIO.Data.Context
 {
     public class AppDbContext : DbContext
     {

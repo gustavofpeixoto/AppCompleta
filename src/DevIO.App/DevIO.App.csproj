@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DevIo.Data\DevIo.Data.csproj" />
+    <ProjectReference Include="..\DevIo.Data\DevIO.Data.csproj" />
   </ItemGroup>
 
 </Project>

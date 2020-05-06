@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace DevIo.Data
+namespace DevIO.Data
 {
     public class Class1
     {

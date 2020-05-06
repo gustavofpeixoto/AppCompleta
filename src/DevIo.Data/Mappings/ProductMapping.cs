@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace DevIo.Data.Mappings
+namespace DevIO.Data.Mappings
 {
     class ProductMapping : IEntityTypeConfiguration<Product>
     {
