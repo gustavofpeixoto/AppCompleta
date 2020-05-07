@@ -18,7 +18,7 @@ namespace DevIO.Data.Repository
                 .FirstOrDefaultAsync(p => p.Id == id);
         }
 
-        public async Task<Provider> GetProviderProductAddress(Guid id)
+        public async Task<Provider> GetProviderProductsAddress(Guid id)
         {
             return await _dbSet.AsNoTracking()
                 .Include(pdc => pdc.Products)

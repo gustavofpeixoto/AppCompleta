@@ -22,7 +22,6 @@ namespace DevIO.Data.Mappings
                 .HasColumnType("varchar(50)");
 
             builder.Property("AddressComplement")
-                .IsRequired()
                 .HasColumnType("varchar(250)");
 
             builder.Property("ZipCode")

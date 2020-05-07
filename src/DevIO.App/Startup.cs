@@ -42,8 +42,9 @@ namespace DevIO.App
 
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
-            services.AddControllersWithViews();
-            services.AddRazorPages();
+            services.AddControllersWithViews();            
+            services.AddRazorPages()
+                .AddRazorRuntimeCompilation();
 
             services.AddScoped<AppDbContext>();
             services.AddScoped<IAddressRepository, AddressRepository>();
