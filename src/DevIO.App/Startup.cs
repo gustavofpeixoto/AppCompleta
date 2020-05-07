@@ -15,6 +15,7 @@ using Microsoft.Extensions.Hosting;
 using DevIO.Data.Context;
 using DevIO.Business.Interfaces;
 using DevIO.Data.Repository;
+using AutoMapper;
 
 namespace DevIO.App
 {
@@ -48,6 +49,8 @@ namespace DevIO.App
             services.AddScoped<IAddressRepository, AddressRepository>();
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<IProviderRepository, ProviderRepository>();
+
+            services.AddAutoMapper(typeof(Startup));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
