@@ -6,6 +6,7 @@ using DevIO.Business.Interfaces;
 using AutoMapper;
 using DevIO.Business.Models;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace DevIO.App.Controllers
 {
@@ -20,10 +21,52 @@ namespace DevIO.App.Controllers
             _mapper = mapper;
         }
 
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            return View(_mapper.Map<IEnumerable<ProviderViewModel>>(await _providerRepository.GetAll()));
+            return View();
         }
+
+        public async Task<JsonResult> GetFilteredItems()
+        {
+            int draw = Convert.ToInt32(Request.Query["draw"]);
+            int start = Convert.ToInt32(Request.Query["start"]);
+            int length = Convert.ToInt32(Request.Query["length"]);
+            int sortColumnIdx = Convert.ToInt32(Request.Query["order[0][column]"]);
+            string sortColumnName = Request.Query["columns[" + sortColumnIdx + "][name]"];
+            string sortColumnDirection = Request.Query["order[0][dir]"];
+            string searchValue = Request.Query["search[value]"].FirstOrDefault()?.Trim();
+            var recordsFiltered = await _providerRepository.Find(p => p.Name.Contains(searchValue));
+            int recordsFilteredCount = recordsFiltered.Count();
+            var recordsTotal = await _providerRepository.GetAll();
+            int recordsTotalCount = recordsTotal.Count();
+
+            var columns = Request.Query["columns"].Count;
+
+            ICollection<ProviderViewModel> filteredData = null;
+
+            if (sortColumnDirection == "asc")
+                filteredData = _mapper.Map<ICollection<ProviderViewModel>>(await _providerRepository.Find(p => p.Name.Contains(searchValue)))
+                    .OrderBy(x => x.GetType().GetProperty(sortColumnName).GetValue(x))
+                    .Skip(start)
+                    .Take(length)
+                    .ToList();
+
+            else
+                filteredData = _mapper.Map<ICollection<ProviderViewModel>>(await _providerRepository.Find(p => p.Name.Contains(searchValue)))
+                    .OrderByDescending(x => x.GetType().GetProperty(sortColumnName).GetValue(x))
+                    .Skip(start)
+                    .Take(length)
+                    .ToList();
+
+            return Json(new
+            {
+                data = filteredData,
+                draw = Request.Query["draw"],
+                recordsFiltered = recordsFilteredCount,
+                recordsTotal = recordsTotalCount
+            });
+        }
+
 
         public async Task<IActionResult> Details(Guid id)
         {
