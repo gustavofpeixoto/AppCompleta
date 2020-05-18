@@ -1,23 +1,19 @@
 ﻿@model DevIO.App.ViewModels.ProductViewModel
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Editar" + Model.Name;
 }
 
-<h1>Edit</h1>
-
-<h4>ProductViewModel</h4>
+<h4 style="padding-top: 30px;">@ViewData["title"]</h4>
 <hr />
+
 <div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
+    <div class="col-md-6">
+        <form enctype="multipart/form-data" asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
             <input type="hidden" asp-for="Id" />
-            <div class="form-group">
-                <label asp-for="ProviderId" class="control-label"></label>
-                <select asp-for="ProviderId" class="form-control" asp-items="ViewBag.ProviderId"></select>
-                <span asp-validation-for="ProviderId" class="text-danger"></span>
-            </div>
+
             <div class="form-group">
                 <label asp-for="Name" class="control-label"></label>
                 <input asp-for="Name" class="form-control" />
@@ -25,13 +21,20 @@
             </div>
             <div class="form-group">
                 <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control" />
+                <textarea cols="40" rows="5" asp-for="Description" class="form-control"> </textarea>
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Picture" class="control-label"></label>
-                <input asp-for="Picture" class="form-control" />
-                <span asp-validation-for="Picture" class="text-danger"></span>
+                <label style="display: block;">Imagem Atual</label>
+                <img src="~/img/@Model.Picture" alt="@Model.Picture" style="width: 100px; height: 140px;" />
+            </div>
+            <div class="form-group">
+                <label asp-for="PictureUpload" class="control-label"></label>
+                <div class="custom-file">
+                    <input type="file" class="custom-file-input" id="pictureUpload" asp-for="PictureUpload" />
+                    <label data-browse="Procurar" style="width: 400px;" class="custom-file-label" for="pictureUpload"></label>
+                    <label style="display: none;" id="img_name"></label>
+                </div>
             </div>
             <div class="form-group">
                 <label asp-for="Price" class="control-label"></label>
@@ -44,16 +47,24 @@
                 </label>
             </div>
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <input type="submit" value="Salvar" class="btn btn-primary" />
+                <a class="btn btn-info" href="javastript:window.history.back();">Voltar</a>
             </div>
         </form>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script>
+        $('#pictureUpload').change(function () {
+            $('#img_name').text(this.files[0].name);
+            $('#img_name')[0].style.display = 'block';
+        });
+
+        $('#pictureUpload').attr('data-val', 'true');
+        $('#pictureUpload').attr('data-val-required', 'Preencha o campo Imagem');
+    </script>
 }

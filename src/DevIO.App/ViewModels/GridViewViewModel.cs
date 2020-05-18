@@ -9,6 +9,7 @@ namespace DevIO.App.ViewModels
     {
         public string[] HeaderColumns { get; set; }
         public string[] DisplayColumns { get; set; }
+        public string[] ColumnType { get; set; }
         public string Url { get; set; }
         public bool ReadOnly { get; set; }
         public int PageSize { get; set; }

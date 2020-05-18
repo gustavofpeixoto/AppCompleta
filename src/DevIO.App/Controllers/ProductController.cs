@@ -7,6 +7,8 @@ using DevIO.Business.Interfaces;
 using AutoMapper;
 using DevIO.Business.Models;
 using System.Linq;
+using Microsoft.AspNetCore.Http;
+using System.IO;
 
 namespace DevIO.App.Controllers
 {
@@ -27,81 +29,42 @@ namespace DevIO.App.Controllers
 
         public IActionResult Index()
         {
-            return View(/*_mapper.Map<IEnumerable<ProductViewModel>>(await _productRepository.GetProducsProviders())*/);
+            return View();
         }
 
-
-        //Action to be called by js in details page when search, sort or page numbers clicked
-        // Search is applied only to Firstname and Lastname properties
+        [HttpGet]
         public async Task<JsonResult> GetFilteredItems()
         {
-            System.Threading.Thread.Sleep(2000);//Used to display loading spinner in demonstration, remove this line in production
             int draw = Convert.ToInt32(Request.Query["draw"]);
-
-            // Data to be skipped , 
-            // if 0 first "length" records will be fetched
-            // if 1 second "length" of records will be fethced ...
             int start = Convert.ToInt32(Request.Query["start"]);
-
-            // Records count to be fetched after skip
             int length = Convert.ToInt32(Request.Query["length"]);
-
-            // Getting Sort Column Name
             int sortColumnIdx = Convert.ToInt32(Request.Query["order[0][column]"]);
             string sortColumnName = Request.Query["columns[" + sortColumnIdx + "][name]"];
-
-            // Sort Column Direction  
             string sortColumnDirection = Request.Query["order[0][dir]"];
-
-            // Search Value
             string searchValue = Request.Query["search[value]"].FirstOrDefault()?.Trim();
-
-            // Records Count matching search criteria 
             var recordsFiltered = await _productRepository.Find(p => p.Name.Contains(searchValue));
             int recordsFilteredCount = recordsFiltered.Count();
-
-            //.Where(a => a.Lastname.Contains(searchValue) || a.Firstname.Contains(searchValue))
-            //.Count();
-
-            // Total Records Count
             var recordsTotal = await _productRepository.GetAll();
             int recordsTotalCount = recordsTotal.Count();
 
-            // Filtered & Sorted & Paged data to be sent from server to view
             ICollection<ProductViewModel> filteredData = null;
+
             if (sortColumnDirection == "asc")
-            {
-                filteredData = _mapper.Map<ICollection<ProductViewModel>>(await _productRepository.Find(p => p.Name.Contains(searchValue)))
+                filteredData = _mapper.Map<ICollection<ProductViewModel>>(await _productRepository.GetProducsProviders())
+                    .Where(p => p.Name.Contains(searchValue))
                     .OrderBy(x => x.GetType().GetProperty(sortColumnName).GetValue(x))
                     .Skip(start)
                     .Take(length)
                     .ToList();
 
-
-                //Data.StudentContext.StudentList
-                //.Where(a => a.Lastname.Contains(searchValue) || a.Firstname.Contains(searchValue))
-                //.OrderBy(x => x.GetType().GetProperty(sortColumnName).GetValue(x))//Sort by sortColumn
-                //.Skip(start)
-                //.Take(length)
-                //.ToList<Student>();
-            }
             else
-            {
-                filteredData = _mapper.Map<ICollection<ProductViewModel>>(await _productRepository.Find(p => p.Name.Contains(searchValue)))
+                filteredData = _mapper.Map<ICollection<ProductViewModel>>(await _productRepository.GetProducsProviders())
+                    .Where(p => p.Name.Contains(searchValue))
                     .OrderByDescending(x => x.GetType().GetProperty(sortColumnName).GetValue(x))
                     .Skip(start)
                     .Take(length)
                     .ToList();
 
-                //filteredData =
-                //   Data.StudentContext.StudentList
-                //   .Where(a => a.Lastname.Contains(searchValue) || a.Firstname.Contains(searchValue))
-                //   .OrderByDescending(x => x.GetType().GetProperty(sortColumnName).GetValue(x))
-                //   .Skip(start)
-                //   .Take(length)
-                //   .ToList<Student>();
-            }
-            // Send data 
             return Json(new
             {
                 data = filteredData,
@@ -109,6 +72,7 @@ namespace DevIO.App.Controllers
                 recordsFiltered = recordsFilteredCount,
                 recordsTotal = recordsTotalCount
             });
+
         }
 
 
@@ -133,9 +97,15 @@ namespace DevIO.App.Controllers
 
             if (!ModelState.IsValid) return View(productViewModel);
 
+            string prefixo = string.Format("{0}_", Guid.NewGuid());
+
+            if (!await UploadFile(productViewModel.PictureUpload, prefixo))
+                return View(productViewModel);
+
+            productViewModel.Picture = string.Format("{0}{1}", prefixo, productViewModel.PictureUpload.FileName);
             await _productRepository.Add(_mapper.Map<Product>(productViewModel));
 
-            return View(productViewModel);
+            return RedirectToAction(nameof(Index));
         }
 
         public async Task<IActionResult> Edit(Guid id)
@@ -152,9 +122,29 @@ namespace DevIO.App.Controllers
         {
             if (id != productViewModel.Id) return NotFound();
 
-            if (ModelState.IsValid) return RedirectToAction(nameof(Index));
+            ProductViewModel product = await GetProductAndAllProviders(id);
+            productViewModel.Providers = product.Providers;
+            productViewModel.Picture = product.Picture;
 
-            await _productRepository.Update(_mapper.Map<Product>(productViewModel));
+            if (!ModelState.IsValid) return View(productViewModel);
+
+            if (productViewModel.PictureUpload != null)
+            {
+                string prefixo = string.Format("{0}_", Guid.NewGuid());
+
+                if (!await UploadFile(productViewModel.PictureUpload, prefixo))
+                    return View(productViewModel);
+
+                product.Picture = string.Format("{0}{1}", prefixo, productViewModel.PictureUpload.FileName);
+            }
+
+            product.Name = productViewModel.Name;
+            product.Price = productViewModel.Price;
+            product.Name = productViewModel.Name;
+            product.Active = productViewModel.Active;
+
+            await _productRepository.Update(_mapper.Map<Product>(product));
+
             return RedirectToAction(nameof(Index));
         }
 
@@ -190,6 +180,26 @@ namespace DevIO.App.Controllers
         {
             productViewModel.Providers = _mapper.Map<IEnumerable<ProviderViewModel>>(await _providerRepository.GetAll());
             return productViewModel;
+        }
+
+        private async Task<bool> UploadFile(IFormFile file, string prefixo)
+        {
+            if (file.Length <= 0) return false;
+
+            string path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/img", string.Concat(prefixo, file.FileName));
+
+            if (System.IO.File.Exists(path))
+            {
+                ModelState.AddModelError(string.Empty, "Já existe um arquivo com este nome");
+                return false;
+            }
+
+            using (var stream = new FileStream(path, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+
+            return true;
         }
     }
 }

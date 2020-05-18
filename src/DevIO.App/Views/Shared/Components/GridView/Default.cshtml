@@ -89,7 +89,6 @@
                         "cache": false,
                         "success": function (json) {
                             cacheLastJson = $.extend(true, {}, json);
-
                             if (cacheLower != drawStart) {
                                 json.data.splice(0, drawStart - cacheLower);
                             }
@@ -169,11 +168,12 @@
                 {
                     <text>
                     {
-                        data: @Html.Raw("'" + Model.DisplayColumns[i].ToLower() + "'"),
+                        data: @Html.Raw("'" + string.Format("{0}{1}", char.ToLower(Model.DisplayColumns[i][0]), Model.DisplayColumns[i].Substring(1)) + "'"),
                         name: @Html.Raw("'" + Model.DisplayColumns[i] + "'"),
                         render: function (data, type, row) {
-                            return getData(data);
-                        }
+                            return getData(data, '@Model.ColumnType[i]');
+                        },
+                        orderable: true
                     },
                     </text>
                 }
@@ -185,9 +185,9 @@
                         data: null,
                         render: function (data, type, row) {
                             return '<div class="text-right">'
-                                + '<a href="/Provider/Details/' + row.id + '" class="btn btn-sm btn-info"><span class="fa fa-search"></span></a>&nbsp;'
-                                + '<a href="/Provider/Edit/' + row.id + '" class="btn btn-sm btn-warning"><span class="fa fa-pencil"></span></a>&nbsp;'
-                                + '<a href="/Provider/Delete/' + row.id + '" class="btn btn-sm btn-danger"><span class="fa fa-trash"></span></a>'
+                                + '<a href="/' +'@Model.Controller'+ '/Details/' + row.id + '" class="btn btn-sm btn-info"><span class="fa fa-search"></span></a>&nbsp;'
+                                + '<a href="/' +'@Model.Controller'+ '/Edit/' + row.id + '" class="btn btn-sm btn-warning"><span class="fa fa-pencil"></span></a>&nbsp;'
+                                + '<a href="/' +'@Model.Controller'+ '/Delete/' + row.id + '" class="btn btn-sm btn-danger"><span class="fa fa-trash"></span></a>'
                                 + '</div>'
                         }
                     },
@@ -210,12 +210,17 @@
     }
 
 
-    function getData(data) {
-        if (data == true) {
-            return '<input checked="checked" class="check-box" disabled="disabled" type="checkbox">'
+    function getData(data, columnType) {
+        if (columnType == 'bool') {
+            if (data == true) {
+                return '<input checked="checked" class="check-box" disabled="disabled" type="checkbox">'
+            }
+            else{
+                return '<input class="check-box" disabled="disabled" type="checkbox">'
+            }
         }
-        else if (data == false) {
-            return '<input class="check-box" disabled="disabled" type="checkbox">'
+        else if (columnType == 'img') {
+            return '<img src="../img/' + data + '" alt="' + data + '" style="width: 70px; height: 100px;" />'
         }
         else {
             return data;

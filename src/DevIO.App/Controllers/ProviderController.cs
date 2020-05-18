@@ -45,14 +45,16 @@ namespace DevIO.App.Controllers
             ICollection<ProviderViewModel> filteredData = null;
 
             if (sortColumnDirection == "asc")
-                filteredData = _mapper.Map<ICollection<ProviderViewModel>>(await _providerRepository.Find(p => p.Name.Contains(searchValue)))
+                filteredData = _mapper.Map<ICollection<ProviderViewModel>>(await _providerRepository.GetAll())
+                    .Where(p => p.Name.Contains(searchValue))
                     .OrderBy(x => x.GetType().GetProperty(sortColumnName).GetValue(x))
                     .Skip(start)
                     .Take(length)
                     .ToList();
-
+            
             else
-                filteredData = _mapper.Map<ICollection<ProviderViewModel>>(await _providerRepository.Find(p => p.Name.Contains(searchValue)))
+                filteredData = _mapper.Map<ICollection<ProviderViewModel>>(await _providerRepository.GetAll())
+                    .Where(p => p.Name.Contains(searchValue))
                     .OrderByDescending(x => x.GetType().GetProperty(sortColumnName).GetValue(x))
                     .Skip(start)
                     .Take(length)

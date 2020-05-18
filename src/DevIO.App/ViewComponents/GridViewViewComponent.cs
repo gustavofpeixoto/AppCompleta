@@ -8,13 +8,14 @@ namespace DevIO.App.ViewComponents
     public class GridViewViewComponent : ViewComponent
     {
         public IViewComponentResult Invoke(string[] headerColumns, 
-            string[] displayColumns, string url, string controller, 
+            string[] displayColumns, string[] columnType, string url, string controller, 
             bool readOnly = false, int pageSize = 10, bool exporting = false)
         {
             GridViewViewModel gridView = new GridViewViewModel
             {
                 HeaderColumns = headerColumns,
                 DisplayColumns = displayColumns,
+                ColumnType = columnType,
                 Url = url,
                 Controller = controller,
                 ReadOnly = readOnly,

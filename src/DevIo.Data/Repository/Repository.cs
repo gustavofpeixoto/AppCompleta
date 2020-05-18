@@ -41,7 +41,7 @@ namespace DevIO.Data.Repository
 
         public virtual async Task<IList<TEntity>> GetAll()
         {
-            return await _dbSet.ToListAsync();
+            return await _dbSet.AsNoTracking().ToListAsync();
         }
 
         public virtual async Task<TEntity> GetById(Guid id)

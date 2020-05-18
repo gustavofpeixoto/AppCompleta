@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using DevIO.App.Extensions;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -26,14 +27,12 @@ namespace DevIO.App.ViewModels
         [DisplayName("Descrição")]
         public string Description { get; set; }
 
-        [Required(ErrorMessage = "O campo {0} é obrigatório")]
-        [StringLength(200, MinimumLength = 2, ErrorMessage = "O campo {0} precisa ter entre {1} e {2} caracteres")]
-        [DisplayName("Imagem")]
         public string Picture { get; set; }
 
         [DisplayName("Nome do Produto")]
         public IFormFile PictureUpload { get; set; }
 
+        [Currency]
         [Required(ErrorMessage = "O campo {0} é obrigatório")]
         [DisplayName("Preço")]
         public decimal Price { get; set; }

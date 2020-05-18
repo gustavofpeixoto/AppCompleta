@@ -6,15 +6,21 @@
 
 <h1>@ViewData["Title"]</h1>
 
+<hr />
+<p>
+    <a class="btn btn-info" asp-action="Create">Novo Fornecedor</a>
+</p>
+
 @await Component.InvokeAsync("GridView", new
 {
     HeaderColumns = new string[] { "Nome", "Documento", "Ativo?" },
     DisplayColumns = new string[] { "Name", "Document", "Active" },
+    ColumnType = new string[] { "string", "string", "bool" },
     Url = "Provider/GetFilteredItems",
     ReadOnly = false,
     PageSize = 10,
     Controller = "Provider",
-    Exporting = true
+    Exporting = false
 })
 
 
