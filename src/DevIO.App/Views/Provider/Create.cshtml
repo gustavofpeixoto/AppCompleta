@@ -8,43 +8,39 @@
 
 <hr />
 <div class="row">
-    <div class="col-md-6">
+    <div class="col-md-10">
         <form asp-action="Create">
 
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <vc:Summary></vc:Summary>
 
             <div class="form-group">
                 <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
+                <input asp-for="Name" class="form-control"/>
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Document" class="control-label"></label>
-                <input asp-for="Document" class="form-control" />
+                <input asp-for="Document" class="form-control"/>
                 <span asp-validation-for="Document" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="ProviderType" class="control-label"></label>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" value="1" asp-for="ProviderType" checked /> Pessoa Física
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" value="2" asp-for="ProviderType" /> Pessoa Jurídica
-                </div>
+                <label asp-for="ProviderType" class="control-label"></label><br />
+                <input type="radio" value="1" asp-for="ProviderType" checked /> Pessoa Física<br />
+                <input type="radio" value="2" asp-for="ProviderType" /> Pessoa Jurídica
             </div>
             <div class="form-group form-check">
                 <label class="form-check-label">
-                    <input class="form-check-input" asp-for="Active" checked/> @Html.DisplayNameFor(model => model.Active)
+                    <input class="form-check-input" asp-for="Active"/> @Html.DisplayNameFor(model => model.Active)
                 </label>
             </div>
 
             <h4>Endereço</h4>
-            <hr />
+            <hr/>
 
-            <partial name="_Address" />
+            <partial name="_Address"/>
 
             <div class="form-group">
-                <input type="submit" value="Cadastrar" class="btn btn-primary" />
+                <input type="submit" value="Cadastrar" class="btn btn-primary"/>
                 <a class="btn btn-info" asp-action="Index">Voltar</a>
             </div>
         </form>

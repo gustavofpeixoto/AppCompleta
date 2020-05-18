@@ -1,49 +1,75 @@
 ﻿@model DevIO.App.ViewModels.ProviderViewModel
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Editar Fornecedor";
 }
 
-<h1>Edit</h1>
+<h1>@ViewData["Title"]</h1>
 
-<h4>ProviderViewModel</h4>
 <hr />
-<div class="row">
-    <div class="col-md-6">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
+
+<form asp-action="Edit">
+
+    <vc:Summary></vc:Summary>
+
+    <input type="hidden" asp-for="Id" />
+
+    <div class="form-row">
+        <div class="form-group col-md-6">
+
+            <label asp-for="Name"></label>
+            <input asp-for="Name" class="form-control" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+
+            <label asp-for="Document"></label>
+            <input asp-for="Document" class="form-control" />
+            <span asp-validation-for="Document" class="text-danger"></span>
+
+        </div>
+
+        <div class="form-group col-md-6">
+
+            <label asp-for="ProviderType"></label>
+            <div>
+                <input type="radio" value="1" asp-for="ProviderType" checked="@(Model.ProviderType == 1)" /> Pessoa Física
+                <input type="radio" value="2" asp-for="ProviderType" checked="@(Model.ProviderType == 2)" /> Pessoa Jurídica
             </div>
-            <div class="form-group">
-                <label asp-for="Document" class="control-label"></label>
-                <input asp-for="Document" class="form-control" />
-                <span asp-validation-for="Document" class="text-danger"></span>
+            <div>
+                &nbsp;
             </div>
-            <div class="form-group">
-                <label asp-for="ProviderType" class="control-label"></label>
-                <input asp-for="ProviderType" class="form-control" />
-                <span asp-validation-for="ProviderType" class="text-danger"></span>
-            </div>
-            <div class="form-group form-check">
+            <div class="form-check">
                 <label class="form-check-label">
                     <input class="form-check-input" asp-for="Active" /> @Html.DisplayNameFor(model => model.Active)
                 </label>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
-</div>
+
+
+    <div class="form-group">
+        <input type="submit" value="Salvar" class="btn btn-primary" />
+    </div>
+</form>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <partial name="_AddressDetails" />
+</div>
+
+<hr />
+<h4>Produtos</h4>
+<div>
+    <partial name="../Product/_ProductList" model="@Model.Products" />
+</div>
+
+<div id="myModal" class="modal fade in">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div id="myModalContent"></div>
+        </div>
+    </div>
 </div>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
 }
